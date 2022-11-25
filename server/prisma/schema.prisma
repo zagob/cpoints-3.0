@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../ERD.png"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String @id @default(uuid())
+  googleId   String
+  email      String @unique
+  name       String
+  avatar_url String
+
+  infoUserId String?   @unique
+  infoUser   InfoUser? @relation(fields: [infoUserId], references: [id])
+
+  Points Points[]
+}
+
+model InfoUser {
+  id             String @id @default(uuid())
+  totalHour      String
+  startHour      String
+  entryLunchHour String
+  exitLunchHour  String
+  exitHour       String
+
+  User User?
+}
+
+model Points {
+  id        String  @id @default(uuid())
+  entryOne  String?
+  exitOne   String?
+  entryTwo  String?
+  exitTwo   String?
+  isHoliday Boolean @default(false)
+  userId    String?
+
+  datetime   DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  bankPointBalance BankPointsBalance?
+
+  User User? @relation(fields: [userId], references: [id])
+}
+
+model BankPointsBalance {
+  id             String      @id @default(uuid())
+  timeMorning    String
+  lunch          String
+  timeAfternoon  String
+  totalTimePoint String
+  statusPoint    PointStatus
+
+  points Points @relation(fields: [pointId], references: [id])
+
+  pointId String @unique
+}
+
+enum PointStatus {
+  UP
+  EQUAL
+  DOWN
+}

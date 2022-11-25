@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "sourceMap": true,
+    "module": "commonjs" /* Specify what module code is generated. */,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "lib": ["esnext"],
+    "paths": {
+      "@modules/*": ["./modules/*"],
+      "@config/*": ["./config/*"],
+      "@shared/*": ["./shared/*"],
+      "@errors/*": ["./errors/*"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
