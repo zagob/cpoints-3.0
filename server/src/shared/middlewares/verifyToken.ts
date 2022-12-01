@@ -21,7 +21,10 @@ export async function verifyToken(
   const [, token] = authHeader.split(" ");
 
   try {
-    const { sub: id } = jwt.verify(token, "12345") as IPayload;
+    const { sub: id } = jwt.verify(
+      token,
+      process.env.KEY_SECRET_JWT
+    ) as IPayload;
 
     req.user = {
       id,

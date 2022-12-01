@@ -57,7 +57,7 @@ export class AuthenticateUserUseCase {
         name: dataUser?.name,
         avatar_url: dataUser?.picture,
       },
-      "12345",
+      process.env.KEY_SECRET_JWT,
       {
         subject: dataUser?.id,
         expiresIn: "1d",

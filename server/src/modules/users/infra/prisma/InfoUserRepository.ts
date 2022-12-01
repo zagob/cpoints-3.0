@@ -5,6 +5,15 @@ import { IUpdateInfoUserDTO } from "../../dtos/IUpdateInfoUserDTO";
 import { IInfoUserRepository } from "../../repositories/IInfoUserRepository";
 
 class InfoUserRepository implements IInfoUserRepository {
+  async findInfoUserById(infoUserId: string): Promise<InfoUser | null> {
+    const infoUser = await prisma.infoUser.findFirst({
+      where: {
+        id: infoUserId,
+      },
+    });
+
+    return infoUser;
+  }
   async updateInfoUser(data: IUpdateInfoUserDTO): Promise<void> {
     await prisma.infoUser.updateMany({
       where: {

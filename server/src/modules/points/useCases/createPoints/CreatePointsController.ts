@@ -11,14 +11,13 @@ class CreatePointsController {
       entryTwo: z.string(),
       exitTwo: z.string(),
       isHoliday: z.boolean().optional(),
-      totalHour: z.number(),
     });
 
     const dataUserIdParams = z.object({
       userId: z.string(),
     });
 
-    const { entryOne, exitOne, entryTwo, exitTwo, isHoliday, totalHour } =
+    const { entryOne, exitOne, entryTwo, exitTwo, isHoliday } =
       dataPointsBody.parse(req.body);
 
     const { userId } = dataUserIdParams.parse(req.params);
@@ -33,8 +32,7 @@ class CreatePointsController {
         exitTwo,
         isHoliday,
       },
-      userId,
-      totalHour
+      userId
     );
 
     return res.json(result);

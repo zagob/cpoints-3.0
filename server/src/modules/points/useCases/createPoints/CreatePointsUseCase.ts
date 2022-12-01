@@ -1,5 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import { AppError } from "../../../../shared/errors/AppError";
+import { timeStringToMinute } from "../../../../utils/timeStringToMinute";
 import {
   convertToMinutes,
   convertToTimeString,
@@ -7,6 +8,7 @@ import {
   splitStringTime,
 } from "../../../../utils/timeTransform";
 import { AuthenticateUserRepository } from "../../../users/infra/prisma/AuthenticateUserRepository";
+import { InfoUserRepository } from "../../../users/infra/prisma/InfoUserRepository";
 import { ICreatePointsDTO } from "../../dtos/ICreatePointsDTO";
 import { PointsRepository } from "../../infra/prisma/PointsRepository";
 
@@ -17,19 +19,31 @@ class CreatePointsUseCase {
     private authenticateUser: AuthenticateUserRepository,
 
     @inject("PointsRepository")
-    private pointsRepository: PointsRepository
+    private pointsRepository: PointsRepository,
+
+    @inject("InfoUser")
+    private infoUser: InfoUserRepository
   ) {}
 
   async execute(
     { entryOne, exitOne, entryTwo, exitTwo, isHoliday }: ICreatePointsDTO,
-    userId: string,
-    totalHour: number
+    userId: string
   ) {
     const existUser = await this.authenticateUser.findUserById(userId);
 
     if (!existUser) {
       throw new AppError("User not found");
     }
+
+    const infoUser = await this.infoUser.findInfoUserById(
+      existUser.infoUserId!
+    );
+
+    if (!infoUser) {
+      throw new AppError("InfoUser not found");
+    }
+
+    const totalMinutes = timeStringToMinute(infoUser.totalHour);
 
     const point = await this.pointsRepository.createPoint(
       {
@@ -71,7 +85,7 @@ class CreatePointsUseCase {
       convertToMinutes(exitTwoSplit.hours, exitTwoSplit.minutes)
     );
 
-    const totalTimePoint = minutesMorning + minutesAfternoon - totalHour;
+    const totalTimePoint = minutesMorning + minutesAfternoon - totalMinutes;
 
     const bankBalance = {
       timeMorning: convertToTimeString(minutesMorning),
